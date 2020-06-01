@@ -1,17 +1,17 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import {DummyUser} from '../../../assets';
 import {fonts, color} from '../../../utils';
 
-const UserInfo = () => {
+const UserInfo = ({onPress, name, profession, photo}) => {
   return (
-    <View style={styles.container}>
-      <Image style={styles.photo} source={DummyUser} />
+    <TouchableOpacity onPress={onPress} style={styles.container}>
+      <Image style={styles.photo} source={{uri: photo}} />
       <View>
-        <Text style={styles.name}>Shayna Melinda</Text>
-        <Text style={styles.profession}>Product Designer</Text>
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.profession}>{profession}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     height: 46,
     width: 46,
     marginRight: 12,
+    borderRadius: 46 / 2,
   },
   name: {
     fontFamily: fonts.primary[600],

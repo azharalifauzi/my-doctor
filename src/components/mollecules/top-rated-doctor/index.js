@@ -1,15 +1,20 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
-import {DummyDoctor, IconStar} from '../../../assets';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {IconPhotoNull, IconStar} from '../../../assets';
 import {color, fonts} from '../../../utils';
 
-const TopRatedDoctor = () => {
+const TopRatedDoctor = ({onPress, name, category, Photo}) => {
+  const img =
+    (!Photo || Photo.length === '0') && typeof Photo !== 'string'
+      ? IconPhotoNull
+      : {uri: Photo};
+
   return (
-    <View style={styles.container}>
-      <Image style={styles.image} source={DummyDoctor} />
+    <TouchableOpacity onPress={onPress} style={styles.container}>
+      <Image style={styles.image} source={img} />
       <View style={styles.identity}>
-        <Text style={styles.name}>Alexa Rachel</Text>
-        <Text style={styles.category}>Pediatrician</Text>
+        <Text style={styles.name}>{name}</Text>
+        <Text style={styles.category}>{category}</Text>
       </View>
       <View style={styles.stars}>
         <IconStar />
@@ -18,7 +23,7 @@ const TopRatedDoctor = () => {
         <IconStar />
         <IconStar />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -39,6 +44,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.primary[400],
     fontSize: 12,
     color: color.text.secondary,
+    textTransform: 'capitalize',
   },
   container: {
     flexDirection: 'row',

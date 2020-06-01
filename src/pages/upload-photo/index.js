@@ -1,26 +1,102 @@
-import React from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import ImagePicker from 'react-native-image-picker';
+
 import {Header, Button, Link, Gap} from '../../components';
-import {color, fonts} from '../../utils';
-import {IconPhotoNull, IconButtonAdd} from '../../assets';
+import {color, fonts, getData, storeData} from '../../utils';
+import {IconPhotoNull, IconButtonAdd, IconRemovePhoto} from '../../assets';
+import {Fire} from '../../config';
 
 const UploadPhoto = ({navigation}) => {
+  const [hasPhoto, setHasPhoto] = useState(false);
+  const [photo, setPhoto] = useState(IconPhotoNull);
+  const [userData, setUserData] = useState({
+    fullName: '',
+    profession: '',
+    uid: '',
+    email: '',
+  });
+  const [photoBase64, setPhotoBase64] = useState('');
+
+  useEffect(() => {
+    getData('user').then(res => {
+      setUserData(res);
+    });
+
+    return () => {
+      setUserData({
+        fullName: '',
+        profession: '',
+        uid: '',
+        email: '',
+      });
+    };
+  }, []);
+
+  const handleChangePhoto = () => {
+    if (!hasPhoto) {
+      ImagePicker.launchImageLibrary(
+        {maxWidth: 300, maxHeight: 300},
+        response => {
+          if (!response.didCancel) {
+            setHasPhoto(true);
+            setPhoto({uri: response.uri});
+            setPhotoBase64(`data:${response.type};base64, ${response.data}`);
+          }
+        },
+      );
+    } else {
+      setPhoto(IconPhotoNull);
+      setHasPhoto(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    Fire.database()
+      .ref(`/users/${userData.uid}/`)
+      .set({
+        ...userData,
+        photo: photoBase64,
+      });
+
+    storeData('user', {
+      ...userData,
+      photo: photoBase64,
+    });
+
+    navigation.replace('MainApp');
+  };
+
   return (
     <View style={styles.page}>
       <Header title="Upload Photo" onPress={() => navigation.goBack()} />
       <View style={styles.content}>
         <View style={styles.identity}>
           <View style={styles.avatarWrapper}>
-            <Image style={styles.avatar} source={IconPhotoNull} />
-            <IconButtonAdd style={styles.addPhoto} />
+            <Image style={styles.avatar} source={photo} />
+            <TouchableOpacity
+              onPress={handleChangePhoto}
+              style={styles.addPhoto}>
+              {hasPhoto ? <IconRemovePhoto /> : <IconButtonAdd />}
+            </TouchableOpacity>
           </View>
-          <Text style={styles.name}>Shayna Melinda</Text>
-          <Text style={styles.profession}>Product Designer</Text>
+          <Text style={styles.name}>{userData.fullName}</Text>
+          <Text style={styles.profession}>{userData.profession}</Text>
         </View>
         <View>
-          <Button title="Upload and Continue" />
+          <Button
+            onPress={handleSubmit}
+            isDisabled={!hasPhoto}
+            title="Upload and Continue"
+          />
           <Gap height={30} />
-          <Link title="Skip for this" align="center" size={16} />
+
+          <Link
+            onPress={() => navigation.replace('MainApp')}
+            title="Skip for this"
+            align="center"
+            size={16}
+          />
         </View>
       </View>
     </View>
@@ -58,6 +134,7 @@ const styles = StyleSheet.create({
   avatar: {
     height: 110,
     width: 110,
+    borderRadius: 110 / 2,
   },
   name: {
     fontFamily: fonts.primary[600],

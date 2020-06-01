@@ -7,6 +7,9 @@ import News from './news';
 import Message from './message';
 import Hospital from './hospital';
 import ChatItem from './chat-item';
+import UserAvatar from './user-avatar';
+import DoctorDesc from './doctor-desc';
+import Loading from './loading';
 
 export {
   Header,
@@ -18,4 +21,7 @@ export {
   News,
   Hospital,
   ChatItem,
+  UserAvatar,
+  DoctorDesc,
+  Loading,
 };

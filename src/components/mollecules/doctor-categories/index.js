@@ -1,14 +1,13 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {IconDokterUmum} from '../../../assets';
 import {color, fonts} from '../../../utils';
 
-const DoctorCategories = ({onPress}) => {
+const DoctorCategories = ({onPress, category, Icon}) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      <IconDokterUmum style={styles.icon} />
+      <Icon style={styles.icon} />
       <Text style={styles.need}>Saya butuh</Text>
-      <Text style={styles.category}>dokter umum</Text>
+      <Text style={styles.category}>{category}</Text>
     </TouchableOpacity>
   );
 };

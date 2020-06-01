@@ -1,17 +1,42 @@
 import React from 'react';
 import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {DummyDoctor, IconChevron} from '../../../assets';
+import {DummyDoctor, IconChevron, IconPhotoNull} from '../../../assets';
 import {color, fonts} from '../../../utils';
 
-const Message = ({name, content, type, onPress}) => {
+const Message = ({
+  name,
+  content,
+  type,
+  onPress,
+  lastChild,
+  title,
+  IconComponent,
+}) => {
+  const Icon = ({source, style}) => {
+    if (!source) {
+      return <Text />;
+    }
+    return <IconComponent style={style} />;
+  };
+
+  if (content === 'male') {
+    content = 'Pria';
+  } else if (content === 'female') {
+    content = 'Wanita';
+  }
+
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
-      <Image style={styles.image} source={DummyDoctor} />
+    <TouchableOpacity onPress={onPress} style={styles.container(lastChild)}>
+      {type === 'profile' ? (
+        <Icon style={styles.image} source={IconComponent} />
+      ) : (
+        <Image style={styles.image} source={IconPhotoNull} />
+      )}
       <View style={styles.textWrapper}>
-        <Text style={styles.name}>Alexander Jannie</Text>
+        <Text style={styles.name}>{title}</Text>
         <Text style={styles.message}>{content}</Text>
       </View>
-      {type === 'pilih-dokter' && <IconChevron />}
+      {(type === 'pilih-dokter' || type === 'profile') && <IconChevron />}
     </TouchableOpacity>
   );
 };
@@ -19,14 +44,14 @@ const Message = ({name, content, type, onPress}) => {
 export default Message;
 
 const styles = StyleSheet.create({
-  container: {
+  container: lastChild => ({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
     borderBottomColor: color.border,
-    borderBottomWidth: 1,
+    borderBottomWidth: lastChild ? 0 : 1,
     justifyContent: 'space-between',
-  },
+  }),
   image: {
     height: 46,
     width: 46,
