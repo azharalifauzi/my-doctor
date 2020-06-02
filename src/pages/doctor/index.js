@@ -29,10 +29,12 @@ const Doctor = ({navigation}) => {
     role: 'user',
   };
   const [userData, setUserData] = useState(initialUserData);
-
   const [ratedDoctors, setRatedDoctors] = useState([1, 2, 3]);
+  const [opacity_0, setOpacity_0] = useState(true);
 
-  getUserData(setUserData, initialUserData);
+  getUserData(setUserData, initialUserData, () => {
+    setOpacity_0(false);
+  });
 
   useEffect(() => {
     navigation.addListener('focus', () => {
@@ -58,7 +60,7 @@ const Doctor = ({navigation}) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container(opacity_0)}>
       <View style={styles.content}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Gap height={14} />
@@ -67,7 +69,7 @@ const Doctor = ({navigation}) => {
               name={userData.fullName}
               profession={userData.profession}
               photo={userData.photo}
-              onPress={() => navigation.navigate('UserProfile')}
+              onPress={() => navigation.navigate('User Profile')}
             />
           </View>
           {userData.role === 'user' && (
@@ -185,10 +187,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.primary[600],
     color: color.text.primary,
   },
-  container: {
+  container: opacity_0 => ({
     backgroundColor: color.secondary,
     flex: 1,
-  },
+    opacity: opacity_0 ? 0 : 1,
+  }),
   content: {
     backgroundColor: color.white,
     borderBottomLeftRadius: 30,

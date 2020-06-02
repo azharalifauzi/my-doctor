@@ -18,13 +18,16 @@ const Header = ({onPress, title, type, name, profession, photo}) => {
 
   return (
     <View style={styles.header(type)}>
-      <Button
-        icon={type === 'dark' ? 'back-light' : 'back-dark'}
-        type="icon-only"
-        onPress={onPress}
-      />
+      {type !== 'profile' && (
+        <Button
+          icon={type === 'dark' ? 'back-light' : 'back-dark'}
+          type="icon-only"
+          onPress={onPress}
+        />
+      )}
+
       <Text style={styles.title(type)}>{title}</Text>
-      <Gap width={24} />
+      {type !== 'profile' && <Gap width={24} />}
     </View>
   );
 };
