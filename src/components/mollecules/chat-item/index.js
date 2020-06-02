@@ -1,19 +1,22 @@
 import React from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
 import {color, fonts} from '../../../utils';
-import {DummyDoctor} from '../../../assets';
+import {DummyDoctor, IconPhotoNull} from '../../../assets';
 
-const ChatItem = ({isOther}) => {
+const ChatItem = ({isOther, content, date, photoOther}) => {
+  const userPhoto =
+    (!photoOther || photoOther?.length === 0) && typeof photoOther !== 'string'
+      ? IconPhotoNull
+      : {uri: photoOther};
+
   return (
     <View style={styles.container(isOther)}>
-      {isOther && <Image style={styles.avatar} source={DummyDoctor} />}
+      {isOther && <Image style={styles.avatar} source={userPhoto} />}
       <View>
         <View style={styles.chatContainer(isOther)}>
-          <Text style={styles.chat(isOther)}>
-            Ibu dokter, apakah memakan jeruk tiap hari itu buruk?
-          </Text>
+          <Text style={styles.chat(isOther)}>{content}</Text>
         </View>
-        <Text style={styles.time(isOther)}>4.20 AM</Text>
+        <Text style={styles.time(isOther)}>{date}</Text>
       </View>
     </View>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {Header, UserAvatar, DoctorDesc, Button} from '../../components';
+import {StyleSheet, View} from 'react-native';
+import {Button, DoctorDesc, Header, UserAvatar} from '../../components';
 import {color} from '../../utils';
 
 const DoctorProfile = ({navigation, route}) => {
@@ -13,13 +13,14 @@ const DoctorProfile = ({navigation, route}) => {
         type="doctor"
         name={profile.fullName}
         gender={profile.gender}
+        photo={profile.photo}
       />
       <DoctorDesc label="Alumnus" desc={profile.alumnus} />
       <DoctorDesc label="Tempat Praktik" desc={profile.praktik} />
       <DoctorDesc lastChild label="No.STR" desc="-" />
       <View style={styles.btnWrapper}>
         <Button
-          onPress={() => navigation.navigate('Chatting')}
+          onPress={() => navigation.navigate('Chatting', {profile})}
           title="Start Consultation"
         />
       </View>

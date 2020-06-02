@@ -2,15 +2,16 @@ import React from 'react';
 import {StyleSheet, TextInput, View} from 'react-native';
 import {color, fonts} from '../../../utils';
 
-const InputChat = ({onChange, onFocus}) => {
+const InputChat = ({onChange, onFocus, value}) => {
   return (
     <View style={styles.container}>
       <TextInput
         placeholderTextColor={color.inputChat.placeholder}
         placeholder="Tulis Pesan"
         style={styles.input}
-        onChange={onChange}
+        onChangeText={onChange}
         onFocus={onFocus}
+        value={value}
       />
     </View>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {DummyDoctor, IconChevron, IconPhotoNull} from '../../../assets';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {IconChevron, IconPhotoNull} from '../../../assets';
 import {color, fonts} from '../../../utils';
 
 const Message = ({
@@ -11,12 +11,18 @@ const Message = ({
   lastChild,
   title,
   IconComponent,
+  photo,
 }) => {
-  const Icon = ({source, style}) => {
-    if (!source) {
+  const userPhoto =
+    (!photo || photo?.length === 0) && typeof photo !== 'string'
+      ? IconPhotoNull
+      : {uri: photo};
+
+  const Icon = ({Source, style}) => {
+    if (!Source) {
       return <Text />;
     }
-    return <IconComponent style={style} />;
+    return <Source style={style} />;
   };
 
   if (content === 'male') {
@@ -28,9 +34,9 @@ const Message = ({
   return (
     <TouchableOpacity onPress={onPress} style={styles.container(lastChild)}>
       {type === 'profile' ? (
-        <Icon style={styles.image} source={IconComponent} />
+        <Icon style={styles.image} Source={IconComponent} />
       ) : (
-        <Image style={styles.image} source={IconPhotoNull} />
+        <Image style={styles.image} source={userPhoto} />
       )}
       <View style={styles.textWrapper}>
         <Text style={styles.name}>{title}</Text>

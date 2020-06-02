@@ -120,6 +120,7 @@ const Doctor = ({navigation}) => {
                   <TopRatedDoctor
                     name={doctor.fullName}
                     category={doctor.category}
+                    Photo={doctor.photo}
                     onPress={() =>
                       navigation.navigate('DoctorProfile', {profile: doctor})
                     }

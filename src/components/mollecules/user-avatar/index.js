@@ -9,7 +9,10 @@ import {
 import {color, fonts} from '../../../utils';
 
 const UserAvatar = ({type, gender, name, profession, photo}) => {
-  const userPhoto = !photo ? IconPhotoNull : {uri: photo};
+  const userPhoto =
+    (!photo || photo?.length === 0) && typeof photo !== 'string'
+      ? IconPhotoNull
+      : {uri: photo};
 
   const Icon = ({style}) => {
     if (gender === 'male') {

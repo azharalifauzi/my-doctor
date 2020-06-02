@@ -38,12 +38,13 @@ const ListDoctor = ({navigation, route}) => {
         {doctors.length === 0 ? (
           <Text style={styles.unavailable}>Dokter tidak tersedia</Text>
         ) : (
-          doctors.map(doctor => (
+          doctors.map((doctor, i) => (
             <Message
-              key={doctor.uid}
+              key={`list-doctor-${doctor.uid}`}
               type="pilih-dokter"
               content={doctor.gender}
               title={doctor.fullName}
+              onPress={() => navigation.navigate('Chatting', {profile: doctor})}
             />
           ))
         )}

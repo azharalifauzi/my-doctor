@@ -1,12 +1,17 @@
 import React from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import {DummyUser} from '../../../assets';
+import {DummyUser, IconPhotoNull} from '../../../assets';
 import {fonts, color} from '../../../utils';
 
 const UserInfo = ({onPress, name, profession, photo}) => {
+  const source =
+    (!photo || photo?.length === 0) && typeof photo !== 'string'
+      ? IconPhotoNull
+      : {uri: photo};
+
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-      <Image style={styles.photo} source={{uri: photo}} />
+      <Image style={styles.photo} source={source} />
       <View>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.profession}>{profession}</Text>

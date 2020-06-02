@@ -4,9 +4,16 @@ import {color, fonts} from '../../../utils';
 import {Button, Gap} from '../../atoms';
 import ChattingHeader from './chatting-header';
 
-const Header = ({onPress, title, type}) => {
+const Header = ({onPress, title, type, name, profession, photo}) => {
   if (type === 'chatting') {
-    return <ChattingHeader onPress={onPress} />;
+    return (
+      <ChattingHeader
+        name={name}
+        profession={profession}
+        photo={photo}
+        onPress={onPress}
+      />
+    );
   }
 
   return (

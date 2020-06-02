@@ -5787,6 +5787,11 @@ react-native-screens@^2.8.0:
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.8.0.tgz#9f989096fc5ccf248e0dfa93a74f1a64057e15f1"
   integrity sha512-fUCIQLZX+5XB0ypWX038P3zso54IFFjTsQUZJWEsjC3pp5rPItAt5SzqtJn+uVjcJaczZ+dpIuvj6IFLqkWLZQ==
 
+react-native-scrollview-offset@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-scrollview-offset/-/react-native-scrollview-offset-1.0.0.tgz#d7c4473bddcb8f386f14e56ecb093d09bd2cc0aa"
+  integrity sha512-PXqbVNRu2Kq6XZOHg7F4J0rAY+STn2t89CdMhaHQY0+YNMzv9zqwvopZa5T+0jPgBJaj8cGM2c9MB925F/K7mA==
+
 react-native-svg-transformer@^0.14.3:
   version "0.14.3"
   resolved "https://registry.yarnpkg.com/react-native-svg-transformer/-/react-native-svg-transformer-0.14.3.tgz#43c8e176f5a11f16f39b87a64018e0ac090ffbdb"

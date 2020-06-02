@@ -1,19 +1,24 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {IconPhotoNull} from '../../../assets';
+import {color, fonts} from '../../../utils';
 import {Button, Gap} from '../../atoms';
-import {fonts, color} from '../../../utils';
-import {DummyDoctor} from '../../../assets';
 
-const ChattingHeader = ({onPress}) => {
+const ChattingHeader = ({onPress, name, profession, photo}) => {
+  const userPhoto =
+    (!photo || photo?.length === 0) && typeof photo !== 'string'
+      ? IconPhotoNull
+      : {uri: photo};
+
   return (
     <View style={styles.header}>
       <Button icon="back-light" type="icon-only" onPress={onPress} />
       <Gap width={24} />
       <View style={styles.textWrapper}>
-        <Text style={styles.title}>Nairobi Putri Hazaya</Text>
-        <Text style={styles.specialist}>Dokter Anak</Text>
+        <Text style={styles.title}>{name}</Text>
+        <Text style={styles.specialist}>{profession}</Text>
       </View>
-      <Image style={styles.image} source={DummyDoctor} />
+      <Image style={styles.image} source={userPhoto} />
     </View>
   );
 };
