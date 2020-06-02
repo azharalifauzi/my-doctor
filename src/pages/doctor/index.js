@@ -7,7 +7,7 @@ import {
   TopRatedDoctor,
   News,
 } from '../../components';
-import {fonts, color, getData} from '../../utils';
+import {fonts, color, getData, getUserData} from '../../utils';
 import {ScrollView} from 'react-native-gesture-handler';
 import {
   IconDokterUmum,
@@ -20,30 +20,27 @@ import {
 import {Fire} from '../../config';
 
 const Doctor = ({navigation}) => {
-  const [userData, setUserData] = useState({
+  const initialUserData = {
     fullName: '',
     profession: '',
     uid: '',
     email: '',
     photo: '',
-  });
+    role: 'user',
+  };
+  const [userData, setUserData] = useState(initialUserData);
 
   const [ratedDoctors, setRatedDoctors] = useState([1, 2, 3]);
 
-  useEffect(() => {
-    getData('user').then(res => {
-      setUserData(res);
-    });
+  getUserData(setUserData, initialUserData);
 
-    return () => {
-      setUserData({
-        fullName: '',
-        profession: '',
-        uid: '',
-        email: '',
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      getData('user').then(res => {
+        setUserData(res);
       });
-    };
-  }, []);
+    });
+  }, [navigation]);
 
   useEffect(() => {
     Fire.database()
@@ -72,65 +69,78 @@ const Doctor = ({navigation}) => {
               photo={userData.photo}
               onPress={() => navigation.navigate('UserProfile')}
             />
-            <Gap height={30} />
-            <Text style={styles.konsultasi}>
-              Mau konsultasi dengan siapa hari ini?
-            </Text>
           </View>
-          <View style={styles.categories}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <Gap width={16} />
-              <DoctorCategories
-                onPress={() =>
-                  navigation.navigate('ListDoctor', {category: 'dokter umum'})
-                }
-                category="dokter umum"
-                Icon={IconDokterUmum}
-              />
-              <DoctorCategories
-                onPress={() =>
-                  navigation.navigate('ListDoctor', {category: 'psikolog'})
-                }
-                category="psikolog"
-                Icon={IconPsikolog}
-              />
-              <DoctorCategories
-                onPress={() =>
-                  navigation.navigate('ListDoctor', {category: 'ahli gizi'})
-                }
-                category="ahli gizi"
-                Icon={IconAhliGizi}
-              />
-              <DoctorCategories
-                onPress={() =>
-                  navigation.navigate('ListDoctor', {category: 'dokter anak'})
-                }
-                category="dokter anak"
-                Icon={IconDokterAnak}
-              />
-            </ScrollView>
-          </View>
-          <Gap height={14} />
-          <View style={styles.wrapper}>
-            <Text style={styles.text}>Top Rated Doctors</Text>
-            <Gap height={16} />
-            <View>
-              {ratedDoctors.map((doctor, i) => (
-                <View key={`top-rated-doctor-${i}`}>
-                  <TopRatedDoctor
-                    name={doctor.fullName}
-                    category={doctor.category}
-                    Photo={doctor.photo}
+          {userData.role === 'user' && (
+            <>
+              <View style={styles.wrapperSpecial}>
+                <Text style={styles.konsultasi}>
+                  Mau konsultasi dengan siapa hari ini?
+                </Text>
+              </View>
+              <View style={styles.categories}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <Gap width={16} />
+                  <DoctorCategories
                     onPress={() =>
-                      navigation.navigate('DoctorProfile', {profile: doctor})
+                      navigation.navigate('ListDoctor', {
+                        category: 'dokter umum',
+                      })
                     }
+                    category="dokter umum"
+                    Icon={IconDokterUmum}
                   />
-                  {i !== 2 ? <Gap height={16} /> : null}
+                  <DoctorCategories
+                    onPress={() =>
+                      navigation.navigate('ListDoctor', {category: 'psikolog'})
+                    }
+                    category="psikolog"
+                    Icon={IconPsikolog}
+                  />
+                  <DoctorCategories
+                    onPress={() =>
+                      navigation.navigate('ListDoctor', {category: 'ahli gizi'})
+                    }
+                    category="ahli gizi"
+                    Icon={IconAhliGizi}
+                  />
+                  <DoctorCategories
+                    onPress={() =>
+                      navigation.navigate('ListDoctor', {
+                        category: 'dokter anak',
+                      })
+                    }
+                    category="dokter anak"
+                    Icon={IconDokterAnak}
+                  />
+                </ScrollView>
+              </View>
+              <Gap height={14} />
+              <View style={styles.wrapper}>
+                <Text style={styles.text}>Top Rated Doctors</Text>
+                <Gap height={16} />
+                <View>
+                  {ratedDoctors.map((doctor, i) => (
+                    <View key={`top-rated-doctor-${i}`}>
+                      <TopRatedDoctor
+                        name={doctor.fullName}
+                        category={doctor.category}
+                        Photo={doctor.photo}
+                        onPress={() =>
+                          navigation.navigate('DoctorProfile', {
+                            profile: doctor,
+                          })
+                        }
+                      />
+                      {i !== 2 ? <Gap height={16} /> : null}
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </View>
-            <View />
-            <Gap height={30} />
+                <View />
+                <Gap height={14} />
+              </View>
+            </>
+          )}
+          <View style={styles.wrapperSpecial}>
             <Text style={styles.text}>Good News</Text>
           </View>
           <View>
@@ -177,14 +187,20 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: color.secondary,
+    flex: 1,
   },
   content: {
     backgroundColor: color.white,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     overflow: 'hidden',
+    flex: 1,
   },
   wrapper: {
     padding: 16,
+  },
+  wrapperSpecial: {
+    padding: 16,
+    paddingTop: 0,
   },
 });

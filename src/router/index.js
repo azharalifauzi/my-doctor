@@ -27,14 +27,14 @@ const MainApp = () => {
     <Tab.Navigator tabBar={props => <BottomNavigator {...props} />}>
       <Tab.Screen component={Doctor} name="Doctor" />
       <Tab.Screen component={Messages} name="Messages" />
-      <Tab.Screen component={Hospitals} name="Hospitals" />
+      <Tab.Screen component={UserProfile} name="User Profile" />
     </Tab.Navigator>
   );
 };
 
 const Router = () => {
   return (
-    <Stack.Navigator initialRouteName="MainApp">
+    <Stack.Navigator>
       <Stack.Screen
         name="Splash"
         component={Splash}

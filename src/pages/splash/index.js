@@ -1,13 +1,21 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {ILLogo} from '../../assets';
+import {getData} from '../../utils';
 
 const Splash = ({navigation}) => {
+  const [userData, setUserData] = useState({});
+
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('GetStarted');
-    }, 3000);
-  }, []);
+    getData('user').then(res => {
+      setUserData(res);
+      if (userData.uid) {
+        navigation.replace('MainApp');
+      } else if (!userData.uid) {
+        navigation.replace('GetStarted');
+      }
+    });
+  }, [navigation, userData?.uid]);
 
   return (
     <View style={styles.page}>

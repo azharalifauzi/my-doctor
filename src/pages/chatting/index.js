@@ -6,7 +6,7 @@ import {Fire} from '../../config';
 import {color, fonts, getUserData} from '../../utils';
 
 const Chatting = ({navigation, route}) => {
-  const {profile} = route.params;
+  const {profile, messageId} = route.params;
 
   const initialUserData = {
     fullName: '',
@@ -19,15 +19,16 @@ const Chatting = ({navigation, route}) => {
   const [chatContent, setChatContent] = useState('');
   const [chatData, setChatData] = useState([]);
   const [trick, setTrick] = useState(0);
-  const [position, setPosition] = useState(0);
-  const [height, setHeight] = useState(0);
 
   const chatRef = useRef(null);
 
   getUserData(setUserData, initialUserData);
 
   useEffect(() => {
-    const urlDB = `chattings/${userData.uid}_${profile.uid}/allChat`;
+    const urlDB = messageId
+      ? `chattings/${messageId}/allChat`
+      : `chattings/${userData.uid}_${profile.uid}/allChat`;
+
     Fire.database()
       .ref(urlDB)
       .on('value', snapshot => {
@@ -90,7 +91,7 @@ const Chatting = ({navigation, route}) => {
         chatTime: `${hour}:${minute} ${hour > 12 ? 'PM' : 'AM'}`,
         chatContent,
       };
-      const chatID = `${userData.uid}_${profile.uid}`;
+      const chatID = messageId ? messageId : `${userData.uid}_${profile.uid}`;
       const urlChat = `chattings/${chatID}/allChat/${year}-${month}-${date}`;
       const urlForUser = `messages/${userData.uid}/${chatID}`;
       const urlForDoctor = `messages/${profile.uid}/${chatID}`;
@@ -128,10 +129,6 @@ const Chatting = ({navigation, route}) => {
     }
   };
 
-  const handleScroll = e => {
-    setPosition(e.nativeEvent.contentOffset.y);
-  };
-
   return (
     <View style={styles.page}>
       <Header
@@ -143,7 +140,6 @@ const Chatting = ({navigation, route}) => {
       />
       <View style={styles.content(trick)}>
         <ScrollView
-          onScroll={handleScroll}
           onContentSizeChange={handleScrollBottom}
           ref={chatRef}
           showsVerticalScrollIndicator={false}>

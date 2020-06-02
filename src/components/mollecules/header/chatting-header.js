@@ -6,9 +6,7 @@ import {Button, Gap} from '../../atoms';
 
 const ChattingHeader = ({onPress, name, profession, photo}) => {
   const userPhoto =
-    (!photo || photo?.length === 0) && typeof photo !== 'string'
-      ? IconPhotoNull
-      : {uri: photo};
+    !photo || photo?.length === 0 ? IconPhotoNull : {uri: photo};
 
   return (
     <View style={styles.header}>
@@ -55,5 +53,6 @@ const styles = StyleSheet.create({
   image: {
     height: 46,
     width: 46,
+    borderRadius: 46 / 2,
   },
 });

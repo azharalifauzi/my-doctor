@@ -2,13 +2,13 @@ import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {
   IconDoctor,
-  IconHospitals,
-  IconMessages,
   IconDoctorActive,
-  IconHospitalsActive,
+  IconEditProfile,
+  IconMessages,
   IconMessagesActive,
+  IconUserProfileActive,
 } from '../../../assets';
-import {fonts, color} from '../../../utils';
+import {color, fonts} from '../../../utils';
 
 const TabItem = ({label, onPress, onLongPress, active}) => {
   const Icon = () => {
@@ -16,8 +16,8 @@ const TabItem = ({label, onPress, onLongPress, active}) => {
       return active ? <IconDoctorActive /> : <IconDoctor />;
     }
 
-    if (label === 'Hospitals') {
-      return active ? <IconHospitalsActive /> : <IconHospitals />;
+    if (label === 'User Profile') {
+      return active ? <IconUserProfileActive /> : <IconEditProfile />;
     }
 
     if (label === 'Messages') {

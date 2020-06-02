@@ -22,7 +22,9 @@ import IconLanguage from './translate_24px_outlined.svg';
 import IconRateUs from './star_outline_24px_outlined.svg';
 import IconHelpCenter from './description_24px_outlined.svg';
 import IconEditProfile from './account_circle_24px_outlined.svg';
+import IconUserProfileActive from './account_circle_24pxactive.svg';
 import IconRemovePhoto from './btn_remove_photo.svg';
+import IconSignOut from './keyboard_tab_24px_outlined.svg';
 
 export {
   IconArrowBlack,
@@ -50,4 +52,6 @@ export {
   IconPsikolog,
   IconAhliGizi,
   IconDokterAnak,
+  IconSignOut,
+  IconUserProfileActive,
 };

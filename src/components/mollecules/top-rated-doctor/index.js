@@ -4,10 +4,7 @@ import {IconPhotoNull, IconStar} from '../../../assets';
 import {color, fonts} from '../../../utils';
 
 const TopRatedDoctor = ({onPress, name, category, Photo}) => {
-  const img =
-    (!Photo || Photo.length === '0') && typeof Photo !== 'string'
-      ? IconPhotoNull
-      : {uri: Photo};
+  const img = !Photo || Photo.length === '0' ? IconPhotoNull : {uri: Photo};
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>

@@ -59,7 +59,10 @@ const Messages = ({navigation}) => {
               content={message.lastChatContent}
               photo={message.partnerChat.photo}
               onPress={() =>
-                navigation.navigate('Chatting', {profile: message.partnerChat})
+                navigation.navigate('Chatting', {
+                  messageId: message.id,
+                  profile: message.partnerChat,
+                })
               }
             />
           );

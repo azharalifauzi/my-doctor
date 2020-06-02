@@ -1,18 +1,25 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {
   IconRemovePhoto,
   IconPhotoNull,
   IconFemale,
   IconMale,
+  IconButtonAdd,
 } from '../../../assets';
 import {color, fonts} from '../../../utils';
 
-const UserAvatar = ({type, gender, name, profession, photo}) => {
+const UserAvatar = ({
+  type,
+  gender,
+  name,
+  profession,
+  photo,
+  onChangePhoto,
+  onRemovePhoto,
+}) => {
   const userPhoto =
-    (!photo || photo?.length === 0) && typeof photo !== 'string'
-      ? IconPhotoNull
-      : {uri: photo};
+    !photo || photo?.length === 0 ? IconPhotoNull : {uri: photo};
 
   const Icon = ({style}) => {
     if (gender === 'male') {
@@ -21,11 +28,27 @@ const UserAvatar = ({type, gender, name, profession, photo}) => {
     return <IconFemale style={style} />;
   };
 
+  const IconEdit = ({style}) => {
+    if (!photo || photo?.length < 0) {
+      return (
+        <TouchableOpacity onPress={onChangePhoto} style={style}>
+          <IconButtonAdd />
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity onPress={onRemovePhoto} style={style}>
+        <IconRemovePhoto />
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={styles.identity}>
       <View style={styles.avatarWrapper}>
         <Image style={styles.avatar} source={userPhoto} />
-        {type === 'edit' && <IconRemovePhoto style={styles.addPhoto} />}
+        {type === 'edit' && <IconEdit style={styles.addPhoto} />}
         {type === 'doctor' && <Icon style={styles.addPhoto} />}
       </View>
       {type !== 'edit' && (

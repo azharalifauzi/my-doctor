@@ -14,9 +14,7 @@ const Message = ({
   photo,
 }) => {
   const userPhoto =
-    (!photo || photo?.length === 0) && typeof photo !== 'string'
-      ? IconPhotoNull
-      : {uri: photo};
+    !photo || photo?.length === 0 ? IconPhotoNull : {uri: photo};
 
   const Icon = ({Source, style}) => {
     if (!Source) {
@@ -62,6 +60,7 @@ const styles = StyleSheet.create({
     height: 46,
     width: 46,
     marginRight: 12,
+    borderRadius: 46 / 2,
   },
   name: {
     fontSize: 16,

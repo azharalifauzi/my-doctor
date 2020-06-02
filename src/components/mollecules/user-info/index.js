@@ -4,10 +4,7 @@ import {DummyUser, IconPhotoNull} from '../../../assets';
 import {fonts, color} from '../../../utils';
 
 const UserInfo = ({onPress, name, profession, photo}) => {
-  const source =
-    (!photo || photo?.length === 0) && typeof photo !== 'string'
-      ? IconPhotoNull
-      : {uri: photo};
+  const source = !photo || photo?.length === 0 ? IconPhotoNull : {uri: photo};
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
