@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View, Keyboard} from 'react-native';
 import {hideMessage, showMessage} from 'react-native-flash-message';
-import {Button, ChatItem, Header, InputChat} from '../../components';
+import {Button, ChatItem, Header, InputChat, Gap} from '../../components';
 import {Fire} from '../../config';
 import {color, fonts, getUserData} from '../../utils';
 
@@ -19,6 +19,10 @@ const Chatting = ({navigation, route}) => {
   const [chatContent, setChatContent] = useState('');
   const [chatData, setChatData] = useState([]);
   const [trick, setTrick] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [checkPosition, setCheckPosition] = useState(false);
 
   const chatRef = useRef(null);
 
@@ -58,22 +62,52 @@ const Chatting = ({navigation, route}) => {
   }, [profile.uid, userData.uid]);
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', handleFocus);
+    if (currentPosition < height - contentHeight) {
+      setCheckPosition(true);
+    } else {
+      setCheckPosition(false);
+    }
+  }, [currentPosition, height, contentHeight]);
 
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidHide', handleFocus);
     return () => {
-      Keyboard.addListener('keyboardDidShow', handleFocus).remove();
+      Keyboard.addListener('keyboardDidHide', handleFocus).remove();
     };
-  });
+  }, []);
 
-  const handleScrollBottom = () => {
-    chatRef.current.scrollToEnd({animated: false});
-    setTrick(1);
+  const handleScrollBottom = (w, h) => {
+    if (currentPosition >= height - contentHeight) {
+      chatRef?.current.scrollToEnd({animated: false});
+    }
+
+    if (chatData.length > 0) {
+      setTimeout(() => {
+        setTrick(1);
+        setHeight(h);
+      }, 500);
+    }
   };
 
-  const handleFocus = () => {
-    setTimeout(() => {
-      chatRef.current.scrollToEnd({animated: true});
-    }, 100);
+  const handleScroll = event => {
+    const {y} = event.nativeEvent.contentOffset;
+    setCurrentPosition(y);
+  };
+
+  const handleFocus = e => {
+    Keyboard.dismiss();
+  };
+
+  const handleScrollFocus = () => {
+    if (chatRef !== null && !checkPosition) {
+      setTimeout(() => {
+        chatRef.current.scrollToEnd({animated: true});
+      }, 300);
+    }
+  };
+
+  const handleLayout = ({nativeEvent}) => {
+    setContentHeight(nativeEvent.layout.height);
   };
 
   const handleSend = () => {
@@ -142,7 +176,10 @@ const Chatting = ({navigation, route}) => {
         <ScrollView
           onContentSizeChange={handleScrollBottom}
           ref={chatRef}
+          onScroll={handleScroll}
+          onLayout={handleLayout}
           showsVerticalScrollIndicator={false}>
+          <Gap height={16} />
           {chatData?.map(chat => {
             let findDate = chat.id.split('-');
             findDate[1] -= 1;
@@ -154,15 +191,31 @@ const Chatting = ({navigation, route}) => {
             return (
               <View key={chat.id}>
                 <Text style={styles.date}>{date.toLocaleString()}</Text>
-                {chat.data?.map(val => (
-                  <ChatItem
-                    key={val.id}
-                    content={val.data.chatContent}
-                    date={val.data.chatTime}
-                    isOther={val.data.sendBy !== userData.uid}
-                    photoOther={profile.photo}
-                  />
-                ))}
+                {chat.data?.map(val => {
+                  let splittedChatTime = val.data.chatTime.split(':');
+                  let chatTime = splittedChatTime[1].split(' ');
+                  chatTime.unshift(splittedChatTime[0]);
+                  let fixedChatTime = [];
+                  for (let i = 0; i < 2; i++) {
+                    if (chatTime[i].length < 2) {
+                      let val = '0' + chatTime[i];
+                      fixedChatTime.push(val);
+                    } else {
+                      fixedChatTime.push(chatTime[i]);
+                    }
+                  }
+                  fixedChatTime = fixedChatTime.join(':') + ' ' + chatTime[2];
+
+                  return (
+                    <ChatItem
+                      key={val.id}
+                      content={val.data.chatContent}
+                      date={fixedChatTime}
+                      isOther={val.data.sendBy !== userData.uid}
+                      photoOther={profile.photo}
+                    />
+                  );
+                })}
               </View>
             );
           })}
@@ -170,6 +223,7 @@ const Chatting = ({navigation, route}) => {
       </View>
       <View style={styles.send}>
         <InputChat
+          onFocus={handleScrollFocus}
           value={chatContent}
           onChange={value => setChatContent(value)}
         />
@@ -184,7 +238,7 @@ export default Chatting;
 const styles = StyleSheet.create({
   content: trick => ({
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
     paddingBottom: 4,
     opacity: trick,
   }),
