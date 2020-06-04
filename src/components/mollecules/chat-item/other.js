@@ -1,9 +1,9 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {IconPhotoNull} from '../../../assets';
 import {color, fonts} from '../../../utils';
 
-const Other = ({content, date, photoOther}) => {
+const Other = ({content, date, photoOther, onLongPress}) => {
   const userPhoto =
     !photoOther || photoOther.length === 0 ? IconPhotoNull : {uri: photoOther};
 
@@ -11,9 +11,11 @@ const Other = ({content, date, photoOther}) => {
     <View style={styles.container}>
       <Image style={styles.avatar} source={userPhoto} />
       <View>
-        <View style={styles.chatContainer}>
+        <TouchableOpacity
+          onLongPress={onLongPress}
+          style={styles.chatContainer}>
           <Text style={styles.chat}>{content}</Text>
-        </View>
+        </TouchableOpacity>
         <Text style={styles.time}>{date}</Text>
       </View>
     </View>

@@ -1,18 +1,53 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {IconChevron, IconPhotoNull} from '../../../assets';
 import {color, fonts} from '../../../utils';
+import {Fire} from '../../../config';
 
 const Message = ({
   name,
-  content,
+  content = '',
   type,
   onPress,
   lastChild,
   title,
   IconComponent,
   photo,
+  messageId,
+  userId,
 }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (type !== 'profile' || type !== 'pilih-dokter') {
+      Fire.database()
+        .ref(`chattings/${messageId}/allChat`)
+        .on('value', snapshot => {
+          const data = snapshot.val();
+
+          if (data) {
+            Object.keys(data).map(key => {
+              const dataChat = [];
+
+              Object.keys(data[key]).map(val => {
+                dataChat.push({
+                  data: data[key][val],
+                  id: val,
+                });
+              });
+              let counting = 0;
+              for (let i = 0; i < dataChat.length; i++) {
+                if (!dataChat[i].data.seenBy[userId].seen) {
+                  counting++;
+                }
+              }
+              setCount(counting);
+            });
+          }
+        });
+    }
+  }, [messageId, type, userId]);
+
   const userPhoto =
     !photo || photo?.length === 0 ? IconPhotoNull : {uri: photo};
 
@@ -23,10 +58,14 @@ const Message = ({
     return <Source style={style} />;
   };
 
-  if (content === 'male') {
+  if (content === 'male' && type === 'pilih-dokter') {
     content = 'Pria';
-  } else if (content === 'female') {
+  } else if (content === 'female' && type === 'pilih-dokter') {
     content = 'Wanita';
+  }
+
+  if (content.length > 31) {
+    content = content.slice(0, 30) + '...';
   }
 
   return (
@@ -40,6 +79,13 @@ const Message = ({
         <Text style={styles.name}>{title}</Text>
         <Text style={styles.message}>{content}</Text>
       </View>
+      {count > 0 && (
+        <View>
+          <View style={styles.unReadContainer}>
+            <Text style={styles.unRead}>{count > 99 ? '99+' : count}</Text>
+          </View>
+        </View>
+      )}
       {(type === 'pilih-dokter' || type === 'profile') && <IconChevron />}
     </TouchableOpacity>
   );
@@ -74,5 +120,18 @@ const styles = StyleSheet.create({
   },
   textWrapper: {
     flex: 1,
+  },
+  unReadContainer: {
+    backgroundColor: color.primary,
+    width: 30,
+    height: 30,
+    borderRadius: 30 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unRead: {
+    color: color.white,
+    fontFamily: fonts.primary[400],
+    fontSize: 12,
   },
 });

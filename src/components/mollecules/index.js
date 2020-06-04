@@ -10,6 +10,7 @@ import ChatItem from './chat-item';
 import UserAvatar from './user-avatar';
 import DoctorDesc from './doctor-desc';
 import Loading from './loading';
+import DialogBoxChat from './dialog-box-chat';
 
 export {
   Header,
@@ -24,4 +25,5 @@ export {
   UserAvatar,
   DoctorDesc,
   Loading,
+  DialogBoxChat,
 };

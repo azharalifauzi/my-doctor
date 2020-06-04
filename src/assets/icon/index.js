@@ -25,6 +25,10 @@ import IconEditProfile from './account_circle_24px_outlined.svg';
 import IconUserProfileActive from './account_circle_24pxactive.svg';
 import IconRemovePhoto from './btn_remove_photo.svg';
 import IconSignOut from './keyboard_tab_24px_outlined.svg';
+import IconHome from './home_24px_outlined.svg';
+import IconHomeActive from './home_24px_active.svg';
+import IconCheck from './done_24px_outlined.svg';
+import IconCheckSeen from './done_24px_seen.svg';
 
 export {
   IconArrowBlack,
@@ -54,4 +58,8 @@ export {
   IconDokterAnak,
   IconSignOut,
   IconUserProfileActive,
+  IconHome,
+  IconHomeActive,
+  IconCheck,
+  IconCheckSeen,
 };

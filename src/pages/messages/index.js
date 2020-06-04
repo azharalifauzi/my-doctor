@@ -21,6 +21,7 @@ const Messages = ({navigation}) => {
     if (userData.uid.length > 0) {
       Fire.database()
         .ref(`messages/${userData.uid}/`)
+        .orderByChild('lastChatDate')
         .on('value', async snapshot => {
           const data = snapshot.val();
 
@@ -31,7 +32,7 @@ const Messages = ({navigation}) => {
                 .ref(`users/${data[key].uidPartner}`)
                 .once('value');
 
-              newData.push({
+              newData.unshift({
                 id: key,
                 ...data[key],
                 partnerChat: partnerChat.val(),
@@ -55,6 +56,8 @@ const Messages = ({navigation}) => {
           return (
             <Message
               title={message.partnerChat.fullName}
+              messageId={message.id}
+              userId={userData.uid}
               key={message.id}
               content={message.lastChatContent}
               photo={message.partnerChat.photo}

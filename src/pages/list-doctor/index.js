@@ -42,6 +42,7 @@ const ListDoctor = ({navigation, route}) => {
             <Message
               key={`list-doctor-${doctor.uid}`}
               type="pilih-dokter"
+              photo={doctor.photo}
               content={doctor.gender}
               title={doctor.fullName}
               onPress={() => navigation.navigate('Chatting', {profile: doctor})}

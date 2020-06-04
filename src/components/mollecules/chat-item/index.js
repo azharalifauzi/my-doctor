@@ -1,20 +1,60 @@
-import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {IconCheck, IconCheckSeen} from '../../../assets';
+import {Fire} from '../../../config';
 import {color, fonts} from '../../../utils';
 import Other from './other';
 
-const ChatItem = ({isOther, content, date, photoOther}) => {
+const ChatItem = ({
+  isOther,
+  content,
+  date,
+  photoOther,
+  urlDB,
+  chatId,
+  itemId,
+  userDataId,
+  chatData,
+  seen,
+  onLongPress,
+}) => {
+  useEffect(() => {
+    if (userDataId) {
+      Fire.database()
+        .ref(urlDB)
+        .child(chatId)
+        .child(itemId)
+        .child('seenBy')
+        .child(userDataId)
+        .update({seen: true});
+    }
+  }, [chatData]);
+
   if (isOther) {
-    return <Other content={content} date={date} photoOther={photoOther} />;
+    return (
+      <Other
+        onLongPress={onLongPress}
+        content={content}
+        date={date}
+        photoOther={photoOther}
+      />
+    );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.chatContainer}>
-        <Text style={styles.chat}>{content}</Text>
+    <>
+      <View style={styles.container}>
+        <TouchableOpacity
+          onLongPress={onLongPress}
+          style={styles.chatContainer}>
+          <Text style={styles.chat}>{content}</Text>
+        </TouchableOpacity>
+        <View style={styles.seenContainer}>
+          <Text style={styles.time}>{date}</Text>
+          {seen ? <IconCheckSeen /> : <IconCheck style={styles.icon} />}
+        </View>
       </View>
-      <Text style={styles.time}>{date}</Text>
-    </View>
+    </>
   );
 };
 
@@ -43,6 +83,7 @@ const styles = StyleSheet.create({
     color: color.text.secondary,
     fontSize: 11,
     alignSelf: 'flex-end',
+    marginRight: 4,
   },
   avatar: {
     height: 30,
@@ -50,5 +91,9 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginRight: 8,
     borderRadius: 30 / 2,
+  },
+  seenContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
