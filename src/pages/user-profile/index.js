@@ -40,16 +40,9 @@ const UserProfile = ({navigation}) => {
         navigation.replace('GetStarted');
       })
       .catch(err => {
-        showMessage({
-          message: err.message,
-          backgroundColor: color.error,
-          color: color.white,
-          type: 'default',
-        });
-
-        setTimeout(() => {
-          hideMessage;
-        }, [3000]);
+        console.log(err.message);
+        AsyncStorage.removeItem('user');
+        navigation.replace('GetStarted');
       });
   };
 

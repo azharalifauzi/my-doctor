@@ -6,7 +6,7 @@ export const getUserData = (setData, initialState, callback) =>
     getData('user').then(res => {
       setData(res);
       if (callback) {
-        callback();
+        callback(res);
       }
     });
 

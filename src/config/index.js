@@ -1,3 +1,3 @@
-import Fire from './firebase';
+import {Fire, messaging} from './firebase';
 
-export {Fire};
+export {Fire, messaging};

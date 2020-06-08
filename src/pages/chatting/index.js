@@ -38,9 +38,9 @@ const Chatting = ({navigation, route}) => {
 
   getUserData(setUserData, initialUserData);
 
-  const urlDB = messageId
-    ? `chattings/${messageId}/allChat`
-    : `chattings/${userData.uid}_${profile.uid}/allChat`;
+  const messageID = messageId ? messageId : `${userData.uid}_${profile.uid}`;
+  const urlDB = `chattings/${messageID}/allChat`;
+
   useEffect(() => {
     Fire.database()
       .ref(urlDB)
@@ -49,19 +49,54 @@ const Chatting = ({navigation, route}) => {
 
         if (data) {
           const allDataChat = [];
-          Object.keys(data).map(key => {
+          const sortedAllChatKey = Object.keys(data).sort((a, b) => {
+            const findDateA = a.split('-');
+            findDateA[1] = findDateA[1] - 1;
+            const dateA = new Date(
+              findDateA[0],
+              findDateA[1],
+              findDateA[2],
+            ).getTime();
+
+            const findDateB = b.split('-');
+            findDateB[1] = findDateB[1] - 1;
+            const dateB = new Date(
+              findDateA[0],
+              findDateA[1],
+              findDateA[2],
+            ).getTime();
+
+            if (dateA < dateB) {
+              return 1;
+            }
+            if (dateA > dateB) {
+              return -1;
+            }
+            return 0;
+          });
+          sortedAllChatKey.map(key => {
             const dataChat = [];
 
             Object.keys(data[key]).map(val => {
-              dataChat.push({
+              dataChat.unshift({
                 data: data[key][val],
                 id: val,
               });
             });
 
-            allDataChat.push({
+            const sortedDataChat = dataChat.sort((a, b) => {
+              if (a.data.chatDate > b.data.chatDate) {
+                return 1;
+              }
+              if (a.data.chatDate < b.data.chatDate) {
+                return -1;
+              }
+              return 0;
+            });
+
+            allDataChat.unshift({
               id: key,
-              data: dataChat,
+              data: sortedDataChat,
             });
           });
 
@@ -71,7 +106,7 @@ const Chatting = ({navigation, route}) => {
   }, [profile.uid, userData.uid, urlDB]);
 
   useEffect(() => {
-    if (currentPosition < height - contentHeight) {
+    if (currentPosition + 200 < height - contentHeight) {
       setCheckPosition(true);
     } else {
       setCheckPosition(false);
@@ -163,6 +198,57 @@ const Chatting = ({navigation, route}) => {
               lastChatContent: chatContent,
               lastChatDate: today.getTime(),
               uidPartner: userData.uid,
+            });
+
+          // Send Notification
+          Fire.database()
+            .ref(`devices/${profile.uid}`)
+            .once('value')
+            .then(snapshot => {
+              const value = snapshot.val();
+              if (value) {
+                let destination = value.fcmToken;
+                const body = {
+                  data: {
+                    senderId: userData.uid,
+                    messageId: messageID,
+                  },
+                  notification: {
+                    title: userData.fullName,
+                    body: chatContent,
+                  },
+                  to: destination,
+                };
+
+                const headers = new Headers();
+
+                headers.append(
+                  'Authorization',
+                  'key=AAAAj5jpOkE:APA91bFtoVc_1-x9yD2UqvHNiH1a5pbR4T93Jub3DFBn5jFXNhrYxguawTEdC8RMyLvdxjXUS__tmJBQtEuRAgcgLR7JROtiRZqBHGl1Q_NzHuNmFpA3BD3LIeWEKzfmT9Mc9bprSpAT',
+                );
+                headers.append('Content-Type', 'application/json');
+
+                fetch('https://fcm.googleapis.com/fcm/send', {
+                  method: 'POST',
+                  body: JSON.stringify(body),
+                  headers,
+                })
+                  .then(response => response.json())
+                  .then(val => {
+                    Fire.database()
+                      .ref(`notifications/${userData.uid}`)
+                      .push({
+                        senderId: userData.uid,
+                        messageId: messageID,
+                        body: chatContent,
+                        title: userData.fullName,
+                        receiverToken: destination,
+                      });
+                  })
+                  .catch(err => {
+                    console.log(err);
+                  });
+              }
             });
         })
         .catch(err => {

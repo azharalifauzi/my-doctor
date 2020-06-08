@@ -1,23 +1,21 @@
-import React from 'react';
-
-import {createStackNavigator} from '@react-navigation/stack';
-import {
-  Splash,
-  GetStarted,
-  Register,
-  Login,
-  UploadPhoto,
-  Doctor,
-  Messages,
-  Hospitals,
-  ListDoctor,
-  Chatting,
-  UserProfile,
-  EditProfile,
-  DoctorProfile,
-} from '../pages';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
+import React from 'react';
 import {BottomNavigator} from '../components';
+import {
+  Chatting,
+  Doctor,
+  DoctorProfile,
+  EditProfile,
+  GetStarted,
+  ListDoctor,
+  Login,
+  Messages,
+  Register,
+  Splash,
+  UploadPhoto,
+  UserProfile,
+} from '../pages';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

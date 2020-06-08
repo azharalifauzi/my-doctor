@@ -26,17 +26,29 @@ const Messages = ({navigation}) => {
           const data = snapshot.val();
 
           if (data) {
-            const newData = [];
+            let newData = [];
             const promises = await Object.keys(data).map(async key => {
               const partnerChat = await Fire.database()
                 .ref(`users/${data[key].uidPartner}`)
                 .once('value');
 
-              newData.unshift({
+              newData.push({
                 id: key,
                 ...data[key],
                 partnerChat: partnerChat.val(),
               });
+
+              const sortedData = newData.sort((a, b) => {
+                if (a.lastChatDate < b.lastChatDate) {
+                  return 1;
+                }
+                if (a.lastChatDate > b.lastChatDate) {
+                  return -1;
+                }
+                return 0;
+              });
+
+              newData = [...sortedData];
             });
 
             await Promise.all(promises);

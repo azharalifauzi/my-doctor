@@ -1,4 +1,8 @@
-import firebase from 'firebase';
+import firebase from '@react-native-firebase/app';
+
+import '@react-native-firebase/messaging';
+import '@react-native-firebase/database';
+import '@react-native-firebase/auth';
 
 firebase.initializeApp({
   apiKey: 'AIzaSyA0xIkNstMMclgSMAlnEBFDcy9UwACZX0o',
@@ -11,6 +15,6 @@ firebase.initializeApp({
   measurementId: 'G-FYRF7RXSB0',
 });
 
-const Fire = firebase;
+export const Fire = firebase;
 
-export default Fire;
+export const messaging = firebase.messaging();

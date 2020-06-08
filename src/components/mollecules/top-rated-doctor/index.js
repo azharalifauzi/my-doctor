@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     marginRight: 12,
+    borderRadius: 50 / 2,
   },
   name: {
     fontFamily: fonts.primary[600],

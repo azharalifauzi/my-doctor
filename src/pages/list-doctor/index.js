@@ -32,7 +32,7 @@ const ListDoctor = ({navigation, route}) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <Header
           type="dark"
-          title="Pilih Dokter Anak"
+          title={`pilih ${category}`}
           onPress={() => navigation.goBack()}
         />
         {doctors.length === 0 ? (

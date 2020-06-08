@@ -1,23 +1,24 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {
-  UserInfo,
-  DoctorCategories,
-  Gap,
-  TopRatedDoctor,
-  News,
-} from '../../components';
-import {fonts, color, getData, getUserData} from '../../utils';
 import {ScrollView} from 'react-native-gesture-handler';
+import {checkNotifications} from 'react-native-permissions';
 import {
-  IconDokterUmum,
-  IconPsikolog,
-  IconAhliGizi,
-  IconDokterAnak,
   DummyGoodNewsCitrus,
   DummyGoodNewsOrange,
+  IconAhliGizi,
+  IconDokterAnak,
+  IconDokterUmum,
+  IconPsikolog,
 } from '../../assets';
-import {Fire} from '../../config';
+import {
+  DoctorCategories,
+  Gap,
+  News,
+  TopRatedDoctor,
+  UserInfo,
+} from '../../components';
+import {Fire, messaging} from '../../config';
+import {color, fonts, getData, getUserData} from '../../utils';
 
 const Doctor = ({navigation}) => {
   const initialUserData = {
@@ -32,8 +33,43 @@ const Doctor = ({navigation}) => {
   const [ratedDoctors, setRatedDoctors] = useState([1, 2, 3]);
   const [opacity_0, setOpacity_0] = useState(true);
 
-  getUserData(setUserData, initialUserData, () => {
+  getUserData(setUserData, initialUserData, user => {
     setOpacity_0(false);
+
+    messaging.onNotificationOpenedApp(remoteMessage => {
+      const senderId = remoteMessage.data.senderId;
+      const messageId = remoteMessage.data.messageId;
+      Fire.database()
+        .ref(`users/${senderId}`)
+        .once('value')
+        .then(snapshot => {
+          const data = snapshot.val();
+          if (data) {
+            navigation.navigate('Messages', {
+              profile: data,
+              messageId: messageId,
+            });
+          }
+        });
+    });
+
+    checkNotifications().then(({status, settings}) => {
+      if (status === 'granted') {
+        messaging.getToken().then(currentToken => {
+          if (currentToken && user) {
+            Fire.database()
+              .ref(`devices/${user.uid}`)
+              .set({
+                fcmToken: currentToken,
+                userId: user.uid,
+                lastAccess: new Date().getTime(),
+              });
+          }
+        });
+      } else {
+        console.log('Unable to get permission to notify.');
+      }
+    });
   });
 
   useEffect(() => {
