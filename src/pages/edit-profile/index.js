@@ -42,7 +42,7 @@ const EditProfile = ({navigation}) => {
   const handleChangePhoto = () => {
     if (!userData.photo) {
       ImagePicker.launchImageLibrary(
-        {maxWidth: 300, maxHeight: 300},
+        {maxWidth: 300, maxHeight: 300, quality: 0.6},
         response => {
           if (!response.didCancel) {
             setUserData({

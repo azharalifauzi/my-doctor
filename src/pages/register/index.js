@@ -4,6 +4,7 @@ import {Button, Gap, Input, Header, Loading} from '../../components';
 import {color, storeData} from '../../utils';
 import {Fire} from '../../config';
 import {showMessage, hideMessage} from 'react-native-flash-message';
+import analytics from '@react-native-firebase/analytics';
 
 const Register = ({navigation}) => {
   const [state, setState] = useState({
@@ -38,7 +39,7 @@ const Register = ({navigation}) => {
         Fire.database()
           .ref(`/users/${res.user.uid}/`)
           .set(data);
-
+        analytics().logSignUp({method: 'email'});
         storeData('user', data);
 
         setLoading(false);

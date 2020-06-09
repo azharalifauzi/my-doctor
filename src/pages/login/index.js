@@ -5,6 +5,7 @@ import {Input, Gap, Link, Button, Loading} from '../../components';
 import {color, fonts, storeData} from '../../utils';
 import {Fire} from '../../config';
 import {showMessage, hideMessage} from 'react-native-flash-message';
+import analytics from '@react-native-firebase/analytics';
 
 const Login = ({navigation}) => {
   const [state, setState] = useState({
@@ -29,6 +30,7 @@ const Login = ({navigation}) => {
         const user = await Fire.database()
           .ref(`users/${res.user.uid}`)
           .once('value');
+        analytics().logLogin({method: 'email'});
         setLoading(false);
         storeData('user', user);
         navigation.replace('MainApp');

@@ -1,17 +1,25 @@
+import Clipboard from '@react-native-community/clipboard';
 import React, {useEffect, useRef, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View, Keyboard} from 'react-native';
+import {
+  AppState,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  SectionList,
+} from 'react-native';
 import {hideMessage, showMessage} from 'react-native-flash-message';
 import {
   Button,
   ChatItem,
+  DialogBoxChat,
+  Gap,
   Header,
   InputChat,
-  Gap,
-  DialogBoxChat,
 } from '../../components';
 import {Fire} from '../../config';
 import {color, fonts, getUserData} from '../../utils';
-import Clipboard from '@react-native-community/clipboard';
 
 const Chatting = ({navigation, route}) => {
   const {profile, messageId} = route.params;
@@ -40,6 +48,20 @@ const Chatting = ({navigation, route}) => {
 
   const messageID = messageId ? messageId : `${userData.uid}_${profile.uid}`;
   const urlDB = `chattings/${messageID}/allChat`;
+
+  useEffect(() => {
+    const handleLeave = () => {
+      if (AppState.currentState !== 'active') {
+        navigation.navigate('Messages');
+      }
+    };
+
+    AppState.addEventListener('change', handleLeave);
+
+    return () => {
+      AppState.removeEventListener('change', handleLeave);
+    };
+  }, []);
 
   useEffect(() => {
     Fire.database()
@@ -103,7 +125,7 @@ const Chatting = ({navigation, route}) => {
           setChatData(allDataChat);
         }
       });
-  }, [profile.uid, userData.uid, urlDB]);
+  }, [profile.uid, userData.uid, urlDB, messageID]);
 
   useEffect(() => {
     if (currentPosition + 200 < height - contentHeight) {
@@ -121,15 +143,36 @@ const Chatting = ({navigation, route}) => {
   }, []);
 
   const handleScrollBottom = (w, h) => {
-    if (chatRef !== null) {
-      chatRef?.current.scrollToEnd({animated: false});
+    const sectionIdx = chatData.length > 0 ? chatData.length - 1 : 0;
+    const itemIdx = chatData[sectionIdx]?.data?.length - 1;
+    const itemIndex = isNaN(itemIdx) ? 0 : itemIdx;
+    if (!checkPosition && chatRef !== null) {
+      // chatRef?.current.scrollToEnd({animated: false});
+      console.log(sectionIdx, itemIndex);
+
+      setTimeout(() => {
+        chatRef.current.scrollToLocation({sectionIndex: sectionIdx, itemIndex});
+      }, 300);
     }
 
+    let totalItems = 0;
+
+    for (let i = 0; i < chatData.length; i++) {
+      for (let j = 0; j < chatData[i].data.length; j++) {
+        totalItems++;
+      }
+    }
+
+    const timeOut = 60 * totalItems;
+
     if (chatData.length > 0) {
-      setTimeout(() => {
-        setTrick(1);
-        setHeight(h);
-      }, 500);
+      setTimeout(
+        () => {
+          setTrick(1);
+          setHeight(h);
+        },
+        timeOut < 650 ? 650 : timeOut,
+      );
     }
   };
 
@@ -143,11 +186,15 @@ const Chatting = ({navigation, route}) => {
   };
 
   const handleScrollFocus = () => {
-    if (chatRef !== null && !checkPosition) {
-      setTimeout(() => {
-        chatRef.current.scrollToEnd({animated: true});
-      }, 300);
-    }
+    setTimeout(() => {
+      if (chatRef !== null && !checkPosition) {
+        // chatRef.current.scrollToEnd({animated: true});
+        const sectionIdx = chatData.length - 1;
+        const itemIndex = chatData[sectionIdx].data.length - 1;
+
+        chatRef.current.scrollToLocation({sectionIndex: sectionIdx, itemIndex});
+      }
+    }, 300);
   };
 
   const handleLayout = ({nativeEvent}) => {
@@ -218,6 +265,8 @@ const Chatting = ({navigation, route}) => {
                     body: chatContent,
                   },
                   to: destination,
+                  priority: 'high',
+                  icon: require('../../assets/ic_launcher.png'),
                 };
 
                 const headers = new Headers();
@@ -227,6 +276,18 @@ const Chatting = ({navigation, route}) => {
                   'key=AAAAj5jpOkE:APA91bFtoVc_1-x9yD2UqvHNiH1a5pbR4T93Jub3DFBn5jFXNhrYxguawTEdC8RMyLvdxjXUS__tmJBQtEuRAgcgLR7JROtiRZqBHGl1Q_NzHuNmFpA3BD3LIeWEKzfmT9Mc9bprSpAT',
                 );
                 headers.append('Content-Type', 'application/json');
+
+                // Scroll To Bottom
+                if (chatRef !== null) {
+                  // chatRef?.current.scrollToEnd({animated: false});
+                  const sectionIdx = chatData.length - 1;
+                  const itemIndex = chatData[sectionIdx].data.length;
+
+                  chatRef.current.scrollToLocation({
+                    sectionIndex: sectionIdx,
+                    itemIndex,
+                  });
+                }
 
                 fetch('https://fcm.googleapis.com/fcm/send', {
                   method: 'POST',
@@ -281,7 +342,78 @@ const Chatting = ({navigation, route}) => {
           type="chatting"
         />
         <View style={styles.content(trick)}>
-          <ScrollView
+          <SectionList
+            showsVerticalScrollIndicator={false}
+            sections={chatData}
+            onContentSizeChange={handleScrollBottom}
+            ref={chatRef}
+            onScrollToIndexFailed={info => {
+              const wait = new Promise(resolve => setTimeout(resolve, 500));
+              wait.then(() => {
+                console.log('error to scroll');
+              });
+            }}
+            onScroll={handleScroll}
+            onLayout={handleLayout}
+            keyExtractor={item => item.id}
+            renderSectionHeader={({section: {id}}) => {
+              let findDate = id.split('-');
+              findDate[1] -= 1;
+
+              const date = new Date(
+                Date.UTC(findDate[0], findDate[1], findDate[2]),
+              ).toDateString();
+
+              return (
+                <>
+                  <Gap height={16} />
+                  <Text style={styles.date}>{date.toLocaleString()}</Text>
+                </>
+              );
+            }}
+            renderItem={({item, section}) => {
+              let splittedChatTime = item.data.chatTime.split(':');
+              let chatTime = splittedChatTime[1].split(' ');
+              chatTime.unshift(splittedChatTime[0]);
+              let fixedChatTime = [];
+              for (let i = 0; i < 2; i++) {
+                if (chatTime[i].length < 2) {
+                  let val = '0' + chatTime[i];
+                  fixedChatTime.push(val);
+                } else {
+                  fixedChatTime.push(chatTime[i]);
+                }
+              }
+              fixedChatTime = fixedChatTime.join(':') + ' ' + chatTime[2];
+
+              const id = profile.uid;
+
+              const seen = item?.data.seenBy[id]?.seen;
+              const seenBySelf = item?.data.seenBy[userData.uid]?.seen;
+
+              return (
+                <ChatItem
+                  key={item.id}
+                  content={item.data.chatContent}
+                  date={fixedChatTime}
+                  isOther={item.data.sendBy !== userData.uid}
+                  photoOther={profile.photo}
+                  urlDB={urlDB}
+                  chatId={section.id}
+                  itemId={item.id}
+                  userDataId={userData.uid}
+                  chatData={chatData}
+                  seen={seen}
+                  seenBySelf={seenBySelf}
+                  onLongPress={() => {
+                    setDialog(true);
+                    setContentToCopy(item.data.chatContent);
+                  }}
+                />
+              );
+            }}
+          />
+          {/* <ScrollView
             onContentSizeChange={handleScrollBottom}
             ref={chatRef}
             onScroll={handleScroll}
@@ -317,6 +449,7 @@ const Chatting = ({navigation, route}) => {
                     const id = profile.uid;
 
                     const seen = val?.data.seenBy[id]?.seen;
+                    const seenBySelf = val?.data.seenBy[userData.uid]?.seen;
 
                     return (
                       <ChatItem
@@ -331,6 +464,7 @@ const Chatting = ({navigation, route}) => {
                         userDataId={userData.uid}
                         chatData={chatData}
                         seen={seen}
+                        seenBySelf={seenBySelf}
                         onLongPress={() => {
                           setDialog(true);
                           setContentToCopy(val.data.chatContent);
@@ -341,7 +475,7 @@ const Chatting = ({navigation, route}) => {
                 </View>
               );
             })}
-          </ScrollView>
+          </ScrollView> */}
         </View>
         <View style={styles.send}>
           <InputChat

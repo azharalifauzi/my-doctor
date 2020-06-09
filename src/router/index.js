@@ -1,7 +1,9 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {BottomNavigator} from '../components';
+import {AppState} from 'react-native';
+import analytics from '@react-native-firebase/analytics';
 import {
   Chatting,
   Doctor,
@@ -16,14 +18,47 @@ import {
   UploadPhoto,
   UserProfile,
 } from '../pages';
+import {messaging, Fire} from '../config';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const MainApp = () => {
+const MainApp = ({navigation}) => {
+  useEffect(() => {
+    messaging.onNotificationOpenedApp(remoteMessage => {
+      const senderId = remoteMessage.data.senderId;
+      const messageId = remoteMessage.data.messageId;
+      Fire.database()
+        .ref(`users/${senderId}`)
+        .once('value')
+        .then(snapshot => {
+          const data = snapshot.val();
+          if (data) {
+            navigation.navigate('Chatting', {
+              profile: data,
+              messageId: messageId,
+            });
+          }
+        });
+    });
+  }, []);
+
+  useEffect(() => {
+    const handleAnalytics = () => {
+      if (AppState.currentState === 'active') {
+        analytics().logAppOpen();
+      }
+    };
+
+    AppState.addEventListener('change', handleAnalytics);
+
+    return () => {
+      AppState.addEventListener('change', handleAnalytics);
+    };
+  }, []);
   return (
     <Tab.Navigator tabBar={props => <BottomNavigator {...props} />}>
-      <Tab.Screen component={Doctor} name="Doctor" />
+      <Tab.Screen component={Doctor} name="Home" />
       <Tab.Screen component={Messages} name="Messages" />
       <Tab.Screen component={UserProfile} name="User Profile" />
     </Tab.Navigator>

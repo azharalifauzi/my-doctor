@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import analytics from '@react-native-firebase/analytics';
 import {checkNotifications} from 'react-native-permissions';
 import {
   DummyGoodNewsCitrus,
@@ -34,25 +35,6 @@ const Doctor = ({navigation}) => {
   const [opacity_0, setOpacity_0] = useState(true);
 
   getUserData(setUserData, initialUserData, user => {
-    setOpacity_0(false);
-
-    messaging.onNotificationOpenedApp(remoteMessage => {
-      const senderId = remoteMessage.data.senderId;
-      const messageId = remoteMessage.data.messageId;
-      Fire.database()
-        .ref(`users/${senderId}`)
-        .once('value')
-        .then(snapshot => {
-          const data = snapshot.val();
-          if (data) {
-            navigation.navigate('Messages', {
-              profile: data,
-              messageId: messageId,
-            });
-          }
-        });
-    });
-
     checkNotifications().then(({status, settings}) => {
       if (status === 'granted') {
         messaging.getToken().then(currentToken => {
@@ -70,6 +52,13 @@ const Doctor = ({navigation}) => {
         console.log('Unable to get permission to notify.');
       }
     });
+    setOpacity_0(false);
+    analytics().setUserProperties({
+      userId: userData.uid,
+      userName: userData.fullName,
+      userProfession: userData.profession,
+      userEmail: userData.email,
+    });
   });
 
   useEffect(() => {
@@ -84,7 +73,8 @@ const Doctor = ({navigation}) => {
     Fire.database()
       .ref('users/')
       .orderByChild('rate')
-      .limitToLast(3)
+      .equalTo(5)
+      .limitToLast(4)
       .once('value')
       .then(res => {
         const data = res.val();
@@ -144,10 +134,10 @@ const Doctor = ({navigation}) => {
                   <DoctorCategories
                     onPress={() =>
                       navigation.navigate('ListDoctor', {
-                        category: 'dokter anak',
+                        category: 'user care',
                       })
                     }
-                    category="dokter anak"
+                    category="user care"
                     Icon={IconDokterAnak}
                   />
                 </ScrollView>

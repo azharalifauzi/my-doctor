@@ -7,13 +7,15 @@ import {
   IconMessages,
   IconMessagesActive,
   IconUserProfileActive,
+  IconHomeActive,
+  IconHome,
 } from '../../../assets';
 import {color, fonts} from '../../../utils';
 
 const TabItem = ({label, onPress, onLongPress, active}) => {
   const Icon = () => {
-    if (label === 'Doctor') {
-      return active ? <IconDoctorActive /> : <IconDoctor />;
+    if (label === 'Home') {
+      return active ? <IconHomeActive /> : <IconHome />;
     }
 
     if (label === 'User Profile') {

@@ -20,7 +20,7 @@
                 android:value="YOUR NOTIFICATION CHANNEL NAME"/>
       <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_description"
                     android:value="YOUR NOTIFICATION CHANNEL DESCRIPTION"/>
-      <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@mipmap/ic_launcher" />
+      <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_notif" />
  
         <!-- Change the value to true to enable pop-up for in foreground (remote-only, for local use ignoreInForeground) -->
       <meta-data  android:name="com.dieam.reactnativepushnotification.notification_foreground"

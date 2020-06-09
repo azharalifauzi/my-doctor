@@ -4,6 +4,7 @@ import {Header, Message} from '../../components';
 import {color, fonts} from '../../utils';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Fire} from '../../config';
+import analytics from '@react-native-firebase/analytics';
 
 const ListDoctor = ({navigation, route}) => {
   const [doctors, setDoctors] = useState([{}]);
@@ -27,6 +28,15 @@ const ListDoctor = ({navigation, route}) => {
       });
   }, []);
 
+  const handleGoToConsult = doctor => {
+    analytics().logEvent('start_consult', {
+      doctorId: doctor.uid,
+      doctorName: doctor.fullName,
+      doctorCategory: doctor.category,
+    });
+    navigation.navigate('Chatting', {profile: doctor});
+  };
+
   return (
     <View style={styles.page}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -45,7 +55,7 @@ const ListDoctor = ({navigation, route}) => {
               photo={doctor.photo}
               content={doctor.gender}
               title={doctor.fullName}
-              onPress={() => navigation.navigate('Chatting', {profile: doctor})}
+              onPress={() => handleGoToConsult(doctor)}
             />
           ))
         )}

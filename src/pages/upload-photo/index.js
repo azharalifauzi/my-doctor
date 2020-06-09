@@ -36,7 +36,7 @@ const UploadPhoto = ({navigation}) => {
   const handleChangePhoto = () => {
     if (!hasPhoto) {
       ImagePicker.launchImageLibrary(
-        {maxWidth: 300, maxHeight: 300},
+        {maxWidth: 300, maxHeight: 300, quality: 0.6},
         response => {
           if (!response.didCancel) {
             setHasPhoto(true);

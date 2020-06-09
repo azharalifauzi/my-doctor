@@ -19,34 +19,42 @@ const Message = ({
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    let isCancelled = false;
     if (type !== 'profile' || type !== 'pilih-dokter') {
-      Fire.database()
-        .ref(`chattings/${messageId}/allChat`)
-        .on('value', snapshot => {
-          const data = snapshot.val();
+      if (!isCancelled) {
+        Fire.database()
+          .ref(`chattings/${messageId}/allChat`)
+          .on('value', snapshot => {
+            const data = snapshot.val();
 
-          if (data) {
-            Object.keys(data).map(key => {
-              const dataChat = [];
-
-              Object.keys(data[key]).map(val => {
-                dataChat.push({
-                  data: data[key][val],
-                  id: val,
+            if (data) {
+              let counts = 0;
+              Object.keys(data).map(key => {
+                const dataChat = [];
+                Object.keys(data[key]).map(val => {
+                  dataChat.push({
+                    data: data[key][val],
+                    id: val,
+                  });
                 });
-              });
-              let counting = 0;
-              for (let i = 0; i < dataChat.length; i++) {
-                if (!dataChat[i].data.seenBy[userId].seen) {
-                  counting++;
+                let counting = 0;
+                for (let i = 0; i < dataChat.length; i++) {
+                  if (!dataChat[i].data.seenBy[userId].seen) {
+                    counting++;
+                  }
                 }
-              }
-              setCount(counting);
-            });
-          }
-        });
+                counts += counting;
+              });
+              setCount(counts);
+            }
+          });
+      }
     }
-  }, [messageId, type, userId]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
 
   const userPhoto =
     !photo || photo?.length === 0 ? IconPhotoNull : {uri: photo};

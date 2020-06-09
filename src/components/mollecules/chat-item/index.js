@@ -17,9 +17,10 @@ const ChatItem = ({
   chatData,
   seen,
   onLongPress,
+  seenBySelf,
 }) => {
   useEffect(() => {
-    if (userDataId) {
+    if (userDataId && !seenBySelf) {
       Fire.database()
         .ref(urlDB)
         .child(chatId)
