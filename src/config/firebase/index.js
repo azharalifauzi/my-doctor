@@ -2,7 +2,7 @@ import firebase from '@react-native-firebase/app';
 
 import '@react-native-firebase/messaging';
 import '@react-native-firebase/database';
-import '@react-native-firebase/auth';
+require('@react-native-firebase/auth');
 import '@react-native-firebase/analytics';
 
 export const Fire = !firebase.apps.length

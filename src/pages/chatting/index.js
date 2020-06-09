@@ -143,10 +143,10 @@ const Chatting = ({navigation, route}) => {
   }, []);
 
   const handleScrollBottom = (w, h) => {
-    const sectionIdx = chatData.length > 0 ? chatData.length - 1 : 0;
+    const sectionIdx = chatData.length - 1;
     const itemIdx = chatData[sectionIdx]?.data?.length - 1;
-    const itemIndex = isNaN(itemIdx) ? 0 : itemIdx;
-    if (!checkPosition && chatRef !== null) {
+    const itemIndex = itemIdx;
+    if (!checkPosition && chatRef !== null && !isNaN(itemIdx)) {
       // chatRef?.current.scrollToEnd({animated: false});
       console.log(sectionIdx, itemIndex);
 
