@@ -1,6 +1,6 @@
 import database from '@react-native-firebase/database';
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, FlatList} from 'react-native';
 import {Gap, Message} from '../../components';
 import {color, fonts, getUserData} from '../../utils';
 
@@ -14,6 +14,7 @@ const Messages = ({navigation}) => {
   };
   const [userData, setUserData] = useState(initialUserData);
   const [messages, setMessages] = useState([]);
+  const [opacity, setOpacity] = useState(0);
 
   getUserData(setUserData, initialUserData);
 
@@ -54,6 +55,7 @@ const Messages = ({navigation}) => {
             await Promise.all(promises);
 
             setMessages(newData);
+            setOpacity(1);
           }
         });
     }
@@ -64,24 +66,53 @@ const Messages = ({navigation}) => {
       <View style={styles.content}>
         <Gap height={30} />
         <Text style={styles.header}>Messages</Text>
-        {messages?.map(message => {
-          return (
-            <Message
-              title={message.partnerChat.fullName}
-              messageId={message.id}
-              userId={userData.uid}
-              key={message.id}
-              content={message.lastChatContent}
-              photo={message.partnerChat.photo}
-              onPress={() =>
-                navigation.navigate('Chatting', {
-                  messageId: message.id,
-                  profile: message.partnerChat,
-                })
-              }
+        <View style={styles.opacity(opacity)}>
+          {messages.length === 0 && userData.role === 'user' ? (
+            <View style={styles.zeroMessagesContainer}>
+              <Text style={styles.zeroMessages}>
+                You don't have any messages
+              </Text>
+              <Text
+                onPress={() => navigation.navigate('Home')}
+                style={styles.startConsult}>
+                Start consulting now!
+              </Text>
+            </View>
+          ) : messages.length === 0 && userData.role === 'doctor' ? (
+            <View style={styles.zeroMessagesContainer}>
+              <Text style={styles.zeroMessages}>
+                You don't have any messages
+              </Text>
+            </View>
+          ) : null}
+          {messages.length > 0 && (
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              keyExtractor={item => item.id}
+              data={messages}
+              renderItem={({item, index}) => (
+                <>
+                  <Message
+                    title={item.partnerChat.fullName}
+                    lastChild={index === messages.length - 1}
+                    messageId={item.id}
+                    userId={userData.uid}
+                    key={item.id}
+                    content={item.lastChatContent}
+                    photo={item.partnerChat.photo}
+                    onPress={() =>
+                      navigation.navigate('Chatting', {
+                        messageId: item.id,
+                        profile: item.partnerChat,
+                      })
+                    }
+                  />
+                  {index === messages.length - 1 && <Gap height={70} />}
+                </>
+              )}
             />
-          );
-        })}
+          )}
+        </View>
       </View>
     </View>
   );
@@ -107,4 +138,25 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     overflow: 'hidden',
   },
+  zeroMessages: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontFamily: fonts.primary[400],
+    color: color.text.primary,
+    marginTop: -30,
+  },
+  startConsult: {
+    textAlign: 'center',
+    marginTop: 6,
+    fontFamily: fonts.primary[300],
+    color: color.text.secondary,
+  },
+  zeroMessagesContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  opacity: opacity => ({
+    opacity: opacity,
+    flex: 1,
+  }),
 });

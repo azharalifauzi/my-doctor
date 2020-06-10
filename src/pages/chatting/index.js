@@ -190,11 +190,10 @@ const Chatting = ({navigation, route}) => {
 
   const handleScrollFocus = () => {
     setTimeout(() => {
-      if (chatRef !== null && !checkPosition) {
+      const sectionIdx = chatData.length - 1;
+      const itemIndex = chatData[sectionIdx]?.data?.length - 1;
+      if (chatRef !== null && !checkPosition && !isNaN(itemIndex)) {
         // chatRef.current.scrollToEnd({animated: true});
-        const sectionIdx = chatData.length - 1;
-        const itemIndex = chatData[sectionIdx].data.length - 1;
-
         chatRef.current.scrollToLocation({
           sectionIndex: sectionIdx,
           itemIndex,
@@ -286,11 +285,10 @@ const Chatting = ({navigation, route}) => {
                 headers.append('Content-Type', 'application/json');
 
                 // Scroll To Bottom
-                if (chatRef !== null) {
+                const sectionIdx = chatData.length - 1;
+                const itemIndex = chatData[sectionIdx]?.data?.length;
+                if (chatRef !== null && !isNaN(itemIndex)) {
                   // chatRef?.current.scrollToEnd({animated: false});
-                  const sectionIdx = chatData.length - 1;
-                  const itemIndex = chatData[sectionIdx].data.length;
-
                   chatRef.current.scrollToLocation({
                     sectionIndex: sectionIdx,
                     itemIndex,
