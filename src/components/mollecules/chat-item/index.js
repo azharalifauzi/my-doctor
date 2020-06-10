@@ -4,6 +4,7 @@ import {IconCheck, IconCheckSeen} from '../../../assets';
 import {Fire} from '../../../config';
 import {color, fonts} from '../../../utils';
 import Other from './other';
+import database from '@react-native-firebase/database';
 
 const ChatItem = ({
   isOther,
@@ -21,7 +22,7 @@ const ChatItem = ({
 }) => {
   useEffect(() => {
     if (userDataId && !seenBySelf) {
-      Fire.database()
+      database()
         .ref(urlDB)
         .child(chatId)
         .child(itemId)

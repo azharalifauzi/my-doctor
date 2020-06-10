@@ -6,6 +6,8 @@ import {color, fonts, storeData} from '../../utils';
 import {Fire} from '../../config';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 import analytics from '@react-native-firebase/analytics';
+import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 
 const Login = ({navigation}) => {
   const [state, setState] = useState({
@@ -24,10 +26,10 @@ const Login = ({navigation}) => {
 
   const handleLogin = () => {
     setLoading(true);
-    Fire.auth()
+    auth()
       .signInWithEmailAndPassword(state.email, state.password)
       .then(async res => {
-        const user = await Fire.database()
+        const user = await database()
           .ref(`users/${res.user.uid}`)
           .once('value');
         analytics().logLogin({method: 'email'});

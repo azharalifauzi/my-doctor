@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import database from '@react-native-firebase/database';
+import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {IconChevron, IconPhotoNull} from '../../../assets';
 import {color, fonts} from '../../../utils';
-import {Fire} from '../../../config';
 
 const Message = ({
   name,
@@ -22,7 +22,7 @@ const Message = ({
     let isCancelled = false;
     if (type !== 'profile' || type !== 'pilih-dokter') {
       if (!isCancelled) {
-        Fire.database()
+        database()
           .ref(`chattings/${messageId}/allChat`)
           .on('value', snapshot => {
             const data = snapshot.val();

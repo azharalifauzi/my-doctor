@@ -5,6 +5,8 @@ import {color, storeData} from '../../utils';
 import {Fire} from '../../config';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 import analytics from '@react-native-firebase/analytics';
+import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 
 const Register = ({navigation}) => {
   const [state, setState] = useState({
@@ -25,7 +27,7 @@ const Register = ({navigation}) => {
   const handleContinue = (email, password) => {
     setLoading(true);
 
-    Fire.auth()
+    auth()
       .createUserWithEmailAndPassword(email, password)
       .then(res => {
         const data = {
@@ -36,7 +38,7 @@ const Register = ({navigation}) => {
           role: 'user',
         };
 
-        Fire.database()
+        database()
           .ref(`/users/${res.user.uid}/`)
           .set(data);
         analytics().logSignUp({method: 'email'});

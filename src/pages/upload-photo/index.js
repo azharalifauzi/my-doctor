@@ -6,6 +6,7 @@ import {Header, Button, Link, Gap} from '../../components';
 import {color, fonts, getData, storeData} from '../../utils';
 import {IconPhotoNull, IconButtonAdd, IconRemovePhoto} from '../../assets';
 import {Fire} from '../../config';
+import database from '@react-native-firebase/database';
 
 const UploadPhoto = ({navigation}) => {
   const [hasPhoto, setHasPhoto] = useState(false);
@@ -52,7 +53,7 @@ const UploadPhoto = ({navigation}) => {
   };
 
   const handleSubmit = () => {
-    Fire.database()
+    database()
       .ref(`/users/${userData.uid}/`)
       .set({
         ...userData,

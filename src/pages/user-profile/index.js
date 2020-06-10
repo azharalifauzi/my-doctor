@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import auth from '@react-native-firebase/auth';
 import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import {hideMessage, showMessage} from 'react-native-flash-message';
 import {
   IconHelpCenter,
   IconLanguage,
@@ -10,7 +10,6 @@ import {
   IconUserProfileActive,
 } from '../../assets';
 import {Gap, Header, Message, UserAvatar} from '../../components';
-import {Fire} from '../../config';
 import {color, getData, getUserData} from '../../utils';
 
 const UserProfile = ({navigation}) => {
@@ -33,7 +32,7 @@ const UserProfile = ({navigation}) => {
   }, [navigation]);
 
   const handleSignOut = () => {
-    Fire.auth()
+    auth()
       .signOut()
       .then(res => {
         AsyncStorage.removeItem('user');

@@ -1,10 +1,10 @@
+import analytics from '@react-native-firebase/analytics';
+import database from '@react-native-firebase/database';
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import {Header, Message} from '../../components';
 import {color, fonts} from '../../utils';
-import {ScrollView} from 'react-native-gesture-handler';
-import {Fire} from '../../config';
-import analytics from '@react-native-firebase/analytics';
 
 const ListDoctor = ({navigation, route}) => {
   const [doctors, setDoctors] = useState([{}]);
@@ -12,7 +12,7 @@ const ListDoctor = ({navigation, route}) => {
   const {category} = route.params;
 
   useEffect(() => {
-    Fire.database()
+    database()
       .ref('users/')
       .orderByChild('category')
       .equalTo(category)

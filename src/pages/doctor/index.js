@@ -1,7 +1,8 @@
+import analytics from '@react-native-firebase/analytics';
+import database from '@react-native-firebase/database';
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import analytics from '@react-native-firebase/analytics';
 import {checkNotifications} from 'react-native-permissions';
 import {
   DummyGoodNewsCitrus,
@@ -18,7 +19,7 @@ import {
   TopRatedDoctor,
   UserInfo,
 } from '../../components';
-import {Fire, messaging} from '../../config';
+import {messaging} from '../../config';
 import {color, fonts, getData, getUserData} from '../../utils';
 
 const Doctor = ({navigation}) => {
@@ -39,7 +40,7 @@ const Doctor = ({navigation}) => {
       if (status === 'granted') {
         messaging.getToken().then(currentToken => {
           if (currentToken && user) {
-            Fire.database()
+            database()
               .ref(`devices/${user.uid}`)
               .set({
                 fcmToken: currentToken,
@@ -70,7 +71,7 @@ const Doctor = ({navigation}) => {
   }, [navigation]);
 
   useEffect(() => {
-    Fire.database()
+    database()
       .ref('users/')
       .orderByChild('rate')
       .equalTo(5)
@@ -159,7 +160,9 @@ const Doctor = ({navigation}) => {
                           })
                         }
                       />
-                      {i !== 2 ? <Gap height={16} /> : null}
+                      {i !== ratedDoctors.length - 1 ? (
+                        <Gap height={16} />
+                      ) : null}
                     </View>
                   ))}
                 </View>

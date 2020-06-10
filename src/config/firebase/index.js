@@ -2,10 +2,10 @@ import firebase from '@react-native-firebase/app';
 
 import '@react-native-firebase/messaging';
 import '@react-native-firebase/database';
-require('@react-native-firebase/auth');
 import '@react-native-firebase/analytics';
+require('@react-native-firebase/auth');
 
-export const Fire = !firebase.apps.length
+const Fire = !firebase.apps.length
   ? firebase.initializeApp({
       apiKey: 'AIzaSyA0xIkNstMMclgSMAlnEBFDcy9UwACZX0o',
       authDomain: 'my-doctor-6306a.firebaseapp.com',
@@ -18,4 +18,4 @@ export const Fire = !firebase.apps.length
     })
   : firebase.app();
 
-export const messaging = firebase.messaging();
+export default Fire;

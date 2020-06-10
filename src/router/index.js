@@ -1,9 +1,11 @@
+import analytics from '@react-native-firebase/analytics';
+import database from '@react-native-firebase/database';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useEffect} from 'react';
-import {BottomNavigator} from '../components';
 import {AppState} from 'react-native';
-import analytics from '@react-native-firebase/analytics';
+import {BottomNavigator} from '../components';
+import {messaging} from '../config';
 import {
   Chatting,
   Doctor,
@@ -18,7 +20,6 @@ import {
   UploadPhoto,
   UserProfile,
 } from '../pages';
-import {messaging, Fire} from '../config';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,7 +29,7 @@ const MainApp = ({navigation}) => {
     messaging.onNotificationOpenedApp(remoteMessage => {
       const senderId = remoteMessage.data.senderId;
       const messageId = remoteMessage.data.messageId;
-      Fire.database()
+      database()
         .ref(`users/${senderId}`)
         .once('value')
         .then(snapshot => {

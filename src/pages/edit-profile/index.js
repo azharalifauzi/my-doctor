@@ -1,17 +1,18 @@
+import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 import React, {useState} from 'react';
-import {StyleSheet, View, ScrollView} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import {showMessage} from 'react-native-flash-message';
+import ImagePicker from 'react-native-image-picker';
 import {
-  Header,
-  UserAvatar,
-  Input,
   Button,
   Gap,
+  Header,
+  Input,
   Loading,
+  UserAvatar,
 } from '../../components';
 import {color, getUserData, storeData} from '../../utils';
-import ImagePicker from 'react-native-image-picker';
-import {Fire} from '../../config';
-import {showMessage} from 'react-native-flash-message';
 
 const EditProfile = ({navigation}) => {
   const initialUserData = {
@@ -61,23 +62,21 @@ const EditProfile = ({navigation}) => {
 
   const handleSubmit = () => {
     setLoading(true);
-    Fire.database()
+    database()
       .ref(`users/${userData.uid}`)
       .update({
         ...userData,
       })
       .then(async res => {
         if (password.length > 0) {
-          const credentials = Fire.auth.EmailAuthProvider.credential(
+          const credentials = auth.EmailAuthProvider.credential(
             userData.email,
             previousPass,
           );
 
-          await Fire.auth().currentUser.reauthenticateWithCredential(
-            credentials,
-          );
+          await auth().currentUser.reauthenticateWithCredential(credentials);
 
-          Fire.auth()
+          auth()
             .currentUser.updatePassword(password)
             .then(res => {
               showMessage({
@@ -91,6 +90,8 @@ const EditProfile = ({navigation}) => {
                 backgroundColor: color.error,
               });
             });
+          setPassword('');
+          setPreviousPass('');
         }
 
         setLoading(false);
@@ -136,6 +137,28 @@ const EditProfile = ({navigation}) => {
             <Gap height={24} />
             <Input isDisabled value={userData.email} label="Email Address" />
             <Gap height={24} />
+            {userData.role === 'doctor' && (
+              <>
+                <Input
+                  value={userData.praktik}
+                  onChange={val => handleChange(val, 'praktik')}
+                  label="Tempat Praktik"
+                />
+                <Gap height={24} />
+                <Input
+                  value={userData.alumnus}
+                  onChange={val => handleChange(val, 'alumnus')}
+                  label="Alumnus"
+                />
+                <Gap height={24} />
+                <Input
+                  value={userData.str}
+                  onChange={val => handleChange(val, 'str')}
+                  label="No. STR"
+                />
+                <Gap height={24} />
+              </>
+            )}
             <Input
               onChange={val => setPreviousPass(val)}
               label="Previous Password"
@@ -143,7 +166,6 @@ const EditProfile = ({navigation}) => {
               secureTextEntry
             />
             <Gap height={24} />
-
             <Input
               onChange={val => handleChangePassword(val)}
               label="Password"

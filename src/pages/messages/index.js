@@ -1,8 +1,8 @@
+import database from '@react-native-firebase/database';
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Message, Gap} from '../../components';
-import {fonts, color, getUserData} from '../../utils';
-import {Fire} from '../../config';
+import {Gap, Message} from '../../components';
+import {color, fonts, getUserData} from '../../utils';
 
 const Messages = ({navigation}) => {
   const initialUserData = {
@@ -19,7 +19,7 @@ const Messages = ({navigation}) => {
 
   useEffect(() => {
     if (userData.uid.length > 0) {
-      Fire.database()
+      database()
         .ref(`messages/${userData.uid}/`)
         .orderByChild('lastChatDate')
         .on('value', async snapshot => {
@@ -28,7 +28,7 @@ const Messages = ({navigation}) => {
           if (data) {
             let newData = [];
             const promises = await Object.keys(data).map(async key => {
-              const partnerChat = await Fire.database()
+              const partnerChat = await database()
                 .ref(`users/${data[key].uidPartner}`)
                 .once('value');
 

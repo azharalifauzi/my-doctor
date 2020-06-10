@@ -1,13 +1,13 @@
 import Clipboard from '@react-native-community/clipboard';
+import database from '@react-native-firebase/database';
 import React, {useEffect, useRef, useState} from 'react';
 import {
   AppState,
   Keyboard,
-  ScrollView,
+  SectionList,
   StyleSheet,
   Text,
   View,
-  SectionList,
 } from 'react-native';
 import {hideMessage, showMessage} from 'react-native-flash-message';
 import {
@@ -18,7 +18,6 @@ import {
   Header,
   InputChat,
 } from '../../components';
-import {Fire} from '../../config';
 import {color, fonts, getUserData} from '../../utils';
 
 const Chatting = ({navigation, route}) => {
@@ -64,7 +63,7 @@ const Chatting = ({navigation, route}) => {
   }, []);
 
   useEffect(() => {
-    Fire.database()
+    database()
       .ref(urlDB)
       .on('value', snapshot => {
         const data = snapshot.val();
@@ -83,9 +82,9 @@ const Chatting = ({navigation, route}) => {
             const findDateB = b.split('-');
             findDateB[1] = findDateB[1] - 1;
             const dateB = new Date(
-              findDateA[0],
-              findDateA[1],
-              findDateA[2],
+              findDateB[0],
+              findDateB[1],
+              findDateB[2],
             ).getTime();
 
             if (dateA < dateB) {
@@ -148,10 +147,14 @@ const Chatting = ({navigation, route}) => {
     const itemIndex = itemIdx;
     if (!checkPosition && chatRef !== null && !isNaN(itemIdx)) {
       // chatRef?.current.scrollToEnd({animated: false});
-      console.log(sectionIdx, itemIndex);
 
       setTimeout(() => {
-        chatRef.current.scrollToLocation({sectionIndex: sectionIdx, itemIndex});
+        chatRef.current.scrollToLocation({
+          sectionIndex: sectionIdx,
+          itemIndex,
+          viewPosition: 0,
+          viewOffset: -5000,
+        });
       }, 300);
     }
 
@@ -192,7 +195,12 @@ const Chatting = ({navigation, route}) => {
         const sectionIdx = chatData.length - 1;
         const itemIndex = chatData[sectionIdx].data.length - 1;
 
-        chatRef.current.scrollToLocation({sectionIndex: sectionIdx, itemIndex});
+        chatRef.current.scrollToLocation({
+          sectionIndex: sectionIdx,
+          itemIndex,
+          viewPosition: 0,
+          viewOffset: -5000,
+        });
       }
     }, 300);
   };
@@ -225,12 +233,12 @@ const Chatting = ({navigation, route}) => {
       const urlForUser = `messages/${userData.uid}/${chatID}`;
       const urlForDoctor = `messages/${profile.uid}/${chatID}`;
 
-      Fire.database()
+      database()
         .ref(urlChat)
         .push(data)
         .then(res => {
           // Set History for user
-          Fire.database()
+          database()
             .ref(urlForUser)
             .set({
               lastChatContent: chatContent,
@@ -239,7 +247,7 @@ const Chatting = ({navigation, route}) => {
             });
 
           // Set History for doctor
-          Fire.database()
+          database()
             .ref(urlForDoctor)
             .set({
               lastChatContent: chatContent,
@@ -248,7 +256,7 @@ const Chatting = ({navigation, route}) => {
             });
 
           // Send Notification
-          Fire.database()
+          database()
             .ref(`devices/${profile.uid}`)
             .once('value')
             .then(snapshot => {
@@ -286,6 +294,8 @@ const Chatting = ({navigation, route}) => {
                   chatRef.current.scrollToLocation({
                     sectionIndex: sectionIdx,
                     itemIndex,
+                    viewPosition: 0,
+                    viewOffset: -5000,
                   });
                 }
 
@@ -296,7 +306,7 @@ const Chatting = ({navigation, route}) => {
                 })
                   .then(response => response.json())
                   .then(val => {
-                    Fire.database()
+                    database()
                       .ref(`notifications/${userData.uid}`)
                       .push({
                         senderId: userData.uid,
